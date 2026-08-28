@@ -94,8 +94,18 @@ function AppShell() {
       case "/checkout":
         return <CheckoutPage cart={cart} clearCart={clearCart} navigate={navigate} setToast={setToast} />;
       case "/auth":
+        // Redirect logged-in users away from auth page
+        if (session) {
+          navigate("/");
+          return null;
+        }
         return <AuthPage navigate={navigate} onSessionChange={setSession} />;
       case "/admin":
+        // Redirect non-admin users to home
+        if (session && session.user?.role !== "admin") {
+          navigate("/");
+          return null;
+        }
         return <AdminGate session={session} navigate={navigate} onSessionChange={setSession} setToast={setToast} refreshCatalog={refreshCatalog} />;
       case "/reviews":
         return <ReviewsPage />;
@@ -108,7 +118,7 @@ function AppShell() {
 
   return (
     <>
-      <Header route={route} navigate={navigate} cart={cart} session={session} />
+      <Header route={route} navigate={navigate} cart={cart} session={session} onSessionChange={setSession} />
       {renderRoute()}
       <Footer navigate={navigate} />
       <FloatingContactButton />

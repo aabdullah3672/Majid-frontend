@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCatalog } from "../context/CatalogContext.jsx";
+import { clearSession } from "../api/client.js";
 import Icon from "./Icon.jsx";
 import CategoryIcon from "./CategoryIcon.jsx";
 import { resolveImage } from "../utils/helpers.jsx";
@@ -15,8 +16,7 @@ const navLinks = [
   { to: "/", label: "Home" },
   { to: "/products", label: "Products" },
   { to: "/reviews", label: "Reviews" },
-  { to: "/about", label: "About" },
-  { to: "/admin", label: "Admin" }
+  { to: "/about", label: "About" }
 ];
 
 function Brand({ navigate }) {
@@ -102,7 +102,7 @@ function MobileNavigation({ navigate, route, categories }) {
   );
 }
 
-export default function Header({ route, navigate, cart, session }) {
+export default function Header({ route, navigate, cart, session, onSessionChange }) {
   const { categories } = useCatalog();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMega, setActiveMega] = useState("");
@@ -182,9 +182,22 @@ export default function Header({ route, navigate, cart, session }) {
             <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Search products" aria-label="Search products" />
             <button type="submit" aria-label="Submit search"><Icon name="arrowRight" /></button>
           </form>
-          <button className={`header-icon button-link${route.path === "/auth" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/auth")} aria-label={session ? `Account for ${session.user?.name || "current user"}` : "Account"}>
+          <button className={`header-icon button-link${route.path === "/auth" ? " is-active" : ""}`} type="button" onClick={() => {
+            if (session) {
+              clearSession();
+              onSessionChange(null);
+              navigateAndClose("/");
+            } else {
+              navigateAndClose("/auth");
+            }
+          }} aria-label={session ? "Logout" : "Account"}>
             <Icon name="user" />
           </button>
+          {session?.user?.role === "admin" && (
+            <button className={`header-icon button-link${route.path === "/admin" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/admin")} aria-label="Admin panel">
+              <Icon name="briefcase" />
+            </button>
+          )}
           <button className={`header-icon cart-link button-link${route.path === "/cart" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/cart")} aria-label={`Cart with ${cartCount} items`}>
             <Icon name="cart" />
             <span className={`cart-badge${cartCount === 0 ? " is-empty" : ""}`}>{cartCount}</span>
