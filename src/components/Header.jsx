@@ -22,8 +22,8 @@ const navLinks = [
 function Brand({ navigate }) {
   return (
     <button className="brand button-link" type="button" onClick={() => navigate("/")} aria-label="VoltXpress home">
-      <span className="brand-mark">VX</span>
-      <span className="brand-name">VoltXpress</span>
+      <span className="brand-mark">TD</span>
+      <span className="brand-name">Tech Dealz</span>
     </button>
   );
 }
