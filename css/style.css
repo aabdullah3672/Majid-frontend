@@ -3323,6 +3323,11 @@ tr:last-child td {
     padding: 10px 0;
   }
 
+  /* Hide search form on mobile - use the mobile menu instead */
+  .search-form {
+    display: none !important;
+  }
+
   .brand-name {
     max-width: 80px;
     font-size: 0.82rem;
@@ -3352,39 +3357,21 @@ tr:last-child td {
     right: -4px;
   }
 
-  /* Search form: below header on mobile */
-  .search-form {
-    min-height: 38px;
-    gap: 6px;
-    padding: 0 4px 0 10px;
-  }
-
-  .search-form input {
-    padding: 8px 0;
-    font-size: 0.82rem;
-  }
-
-  .search-form button {
-    width: 28px;
-    height: 28px;
-  }
-
-  .search-form > .icon {
-    width: 15px;
-    height: 15px;
-  }
-
   /* ─── Hero Carousel: fix overlapping text ───────────────────────── */
   .hero-slider {
-    min-height: 380px;
+    min-height: 420px;
   }
 
   .hero-overlay {
-    background: linear-gradient(180deg, rgba(4, 7, 10, 0.3) 0%, rgba(4, 7, 10, 0.85) 50%, rgba(4, 7, 10, 0.95) 100%);
+    background: rgba(4, 7, 10, 0.92) !important;
+  }
+
+  .hero-slide img {
+    opacity: 0.25;
   }
 
   .hero-content {
-    padding: 60px 0 50px;
+    padding: 60px 0 70px;
   }
 
   .hero-content h1 {
@@ -3393,10 +3380,9 @@ tr:last-child td {
   }
 
   .hero-content p:not(.eyebrow) {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     margin-top: 12px;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.85);
   }
 
   .hero-actions {
@@ -3571,8 +3557,8 @@ tr:last-child td {
 
   /* ─── Carousel: single card scroll on mobile ────────────────────── */
   .featured-carousel-track .product-card {
-    flex: 0 0 calc(70% - 8px);
-    min-width: 160px;
+    flex: 0 0 calc(75% - 8px) !important;
+    min-width: 180px !important;
   }
 
   .featured-carousel-track {
