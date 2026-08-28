@@ -191,6 +191,16 @@ export default function ProductDetailPage({ route, navigate, addToCart }) {
           </div>
         </div>
       </section>
+
+      {/* Product Description */}
+      {product.description && (
+        <section className="pdp-description">
+          <div className="container">
+            <h2>Product Details</h2>
+            <p style={{ whiteSpace: "pre-line" }}>{product.description}</p>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

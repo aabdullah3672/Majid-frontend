@@ -58,6 +58,7 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
     category: product?.category || (categories[0]?.slug || ""),
     subcategory: product?.subcategory || "",
     subtitle: product?.subtitle || "",
+    description: product?.description || "",
     price: product?.price || 0,
     compareAt: product?.compareAt || 0,
     badge: product?.badge || "New",
@@ -136,6 +137,10 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
           <label className="field field-wide">
             <span>Subtitle / Description *</span>
             <input value={form.subtitle} onChange={(e) => update("subtitle", e.target.value)} required />
+          </label>
+          <label className="field field-wide">
+            <span>Product Description / Specifications</span>
+            <textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={4} placeholder="Detailed product description, specs, features..." />
           </label>
           <label className="field">
             <span>Price (PKR) *</span>
