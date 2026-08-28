@@ -145,6 +145,11 @@ export const api = {
   adminCreateProduct: (product) => request("/admin/products", { method: "POST", body: product, auth: true }).then(unwrap),
   adminUpdateProduct: (id, product) => request(`/admin/products/${id}`, { method: "PUT", body: product, auth: true }).then(unwrap),
   adminDeleteProduct: (id) => request(`/admin/products/${id}`, { method: "DELETE", auth: true }),
+  adminSaveProductImages: (productId, imageUrls) => request(`/admin/products/${productId}/images`, {
+    method: "POST",
+    body: { images: imageUrls },
+    auth: true
+  }).then(unwrap),
   adminGetProducts: () => request("/catalog/products?pageSize=100", { auth: true }).then((res) => {
     const d = unwrap(res);
     return d.products || d || [];
@@ -155,6 +160,20 @@ export const api = {
   adminUpdateOrderStatus: (id, status, note) => request(`/admin/orders/${id}/status`, { method: "PUT", body: { status, note }, auth: true }),
   adminBanUser: (id, banned) => request(`/admin/users/${id}/ban`, { method: "PUT", body: { banned }, auth: true }),
   uploadImage: (file) => uploadRequest("/v1/upload", file).then(unwrap),
+  uploadMultipleImages: async (files) => {
+    const session = getSession();
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append("images", file);
+    }
+    const headers = {};
+    if (session?.token) headers.Authorization = `Bearer ${session.token}`;
+    const response = await fetch(`${API_BASE_URL}/v1/upload/multiple`, { method: "POST", headers, body: formData });
+    let data = null;
+    try { data = await response.json(); } catch { data = null; }
+    if (!response.ok) throw new Error(data?.message || "Upload failed.");
+    return unwrap(data);
+  },
   getPaymentMethods: () => request("/v1/payments/methods").then(unwrap),
   initiatePayment: (orderId, method) => request("/v1/payments/initiate", { method: "POST", body: { orderId, method }, auth: true }).then(unwrap),
   confirmStripePayment: (paymentIntentId) => request("/v1/payments/stripe/confirm", { method: "POST", body: { paymentIntentId }, auth: true }).then(unwrap)

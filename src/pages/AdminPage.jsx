@@ -73,6 +73,7 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
   });
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(product?.image || "");
+  const [additionalImages, setAdditionalImages] = useState(product?.images?.map((img) => img.url || img) || []);
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -93,13 +94,32 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
     }
   };
 
+  const handleMultiImageUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      const result = await api.uploadMultipleImages(files);
+      const newUrls = (result.images || []).map((img) => img.url);
+      setAdditionalImages((prev) => [...prev, ...newUrls]);
+    } catch (err) {
+      alert("Image upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeAdditionalImage = (index) => {
+    setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.image) {
       alert("Please upload a product image.");
       return;
     }
-    onSave(form, isNew);
+    onSave({ ...form, additionalImages }, isNew);
   };
 
   const displayImage = preview || resolveImage(form.image);
@@ -159,7 +179,7 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
             <input value={form.badge} onChange={(e) => update("badge", e.target.value)} placeholder="e.g. New, Sale, Hot" />
           </label>
           <div className="field field-wide">
-            <span>Product Image *</span>
+            <span>Main Product Image *</span>
             <input type="file" accept="image/*" onChange={handleImageUpload} style={{ marginBottom: "8px" }} />
             {uploading && <small style={{ color: "var(--ronin-cta)" }}>Uploading...</small>}
             {displayImage && !uploading && (
@@ -168,6 +188,20 @@ function ProductForm({ product, categories, onSave, onCancel, message }) {
               </div>
             )}
             {form.image && <small style={{ color: "var(--ronin-muted)", wordBreak: "break-all" }}>{form.image}</small>}
+          </div>
+          <div className="field field-wide">
+            <span>Additional Images (select multiple)</span>
+            <input type="file" accept="image/*" multiple onChange={handleMultiImageUpload} style={{ marginBottom: "8px" }} />
+            {additionalImages.length > 0 && (
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+                {additionalImages.map((url, i) => (
+                  <div key={i} style={{ position: "relative" }}>
+                    <img src={resolveImage(url)} alt="" style={{ width: "80px", height: "80px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--ronin-line)", background: "#f8f8f8" }} />
+                    <button type="button" onClick={() => removeAdditionalImage(i)} style={{ position: "absolute", top: "-6px", right: "-6px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "12px", cursor: "pointer", lineHeight: "1" }}>×</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <label className="field">
             <span>Colors (comma separated)</span>
@@ -221,13 +255,21 @@ function ProductsPanel({ action, refreshCatalog }) {
   const handleSave = async (formData, isNew) => {
     setMessage("Saving...");
     try {
+      const { additionalImages: extraImages, ...productData } = formData;
       if (isNew) {
-        await api.adminCreateProduct(formData);
-        setMessage("Product created successfully.");
+        await api.adminCreateProduct(productData);
       } else {
-        await api.adminUpdateProduct(formData.id, formData);
-        setMessage("Product updated successfully.");
+        await api.adminUpdateProduct(productData.id, productData);
       }
+      // Save additional images if any
+      if (extraImages?.length) {
+        try {
+          await api.adminSaveProductImages(productData.id, extraImages);
+        } catch (err) {
+          console.error("Failed to save additional images:", err.message);
+        }
+      }
+      setMessage(isNew ? "Product created successfully." : "Product updated successfully.");
       setEditing(null);
       await loadProducts();
       refreshCatalog?.();
