@@ -10,10 +10,12 @@ export function formatMoney(value) {
   return money.format(value).replace("PKR", "Rs.");
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/?$/, "") || "";
+
 export function resolveImage(url) {
   if (!url) return "https://placehold.co/400x400/f3f2f2/5a5a72?text=No+Image";
   if (url.startsWith("/uploads")) {
-    return url;
+    return `${API_BASE}${url}`;
   }
   return url;
 }
