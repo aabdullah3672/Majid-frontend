@@ -60,9 +60,9 @@ export function getCartTotals(cart, products) {
     })
     .filter(Boolean);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = Math.round(subtotal * 0.05);
+  const tax = 0;
   const delivery = subtotal === 0 || subtotal >= 5000 ? 0 : 350;
-  return { items, subtotal, tax, delivery, total: subtotal + tax + delivery };
+  return { items, subtotal, tax, delivery, total: subtotal + delivery };
 }
 
 export function validateForm(form, names) {

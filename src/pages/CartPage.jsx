@@ -6,7 +6,6 @@ function OrderSummary({ totals, action }) {
     <aside className="summary-panel">
       <h2>Order Summary</h2>
       <div className="summary-row"><span>Subtotal</span><strong>{formatMoney(totals.subtotal)}</strong></div>
-      <div className="summary-row"><span>Tax (5%)</span><strong>{formatMoney(totals.tax)}</strong></div>
       <div className="summary-row"><span>Delivery</span><strong>{totals.delivery === 0 ? "Free" : formatMoney(totals.delivery)}</strong></div>
       <div className="summary-row summary-total"><span>Total</span><strong>{formatMoney(totals.total)}</strong></div>
       {action}
