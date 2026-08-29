@@ -136,6 +136,7 @@ export default function Header({ route, navigate, cart, session, onSessionChange
   };
 
   return (
+    <>
     <header className={`site-header${isScrolled ? " is-scrolled" : ""}`}>
       <div className="utility-bar">
         <div className="container utility-bar-inner">
@@ -147,6 +148,10 @@ export default function Header({ route, navigate, cart, session, onSessionChange
         </div>
       </div>
       <div className="container navbar">
+        <button className="menu-toggle" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Open navigation" aria-expanded={menuOpen}>
+          <Icon name={menuOpen ? "close" : "menu"} />
+        </button>
+
         <Brand navigate={navigate} />
 
         {/* Icon-only category navigation (like Ronin.pk) */}
@@ -177,11 +182,6 @@ export default function Header({ route, navigate, cart, session, onSessionChange
         </nav>
 
         <div className="header-actions">
-          <form className="search-form" onSubmit={submitSearch} role="search">
-            <Icon name="search" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Search products" aria-label="Search products" />
-            <button type="submit" aria-label="Submit search"><Icon name="arrowRight" /></button>
-          </form>
           <button className={`header-icon button-link${route.path === "/auth" ? " is-active" : ""}`} type="button" onClick={() => {
             if (session) {
               clearSession();
@@ -202,15 +202,48 @@ export default function Header({ route, navigate, cart, session, onSessionChange
             <Icon name="cart" />
             <span className={`cart-badge${cartCount === 0 ? " is-empty" : ""}`}>{cartCount}</span>
           </button>
-          <button className="menu-toggle" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Open navigation" aria-expanded={menuOpen}>
-            <Icon name={menuOpen ? "close" : "menu"} />
-          </button>
         </div>
+
+        <form className="search-form" onSubmit={submitSearch} role="search">
+          <Icon name="search" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Search products" aria-label="Search products" />
+          <button type="submit" aria-label="Submit search"><Icon name="arrowRight" /></button>
+        </form>
       </div>
       <div className={`container mobile-menu${menuOpen ? " is-open" : ""}`}>
         <MobileNavigation navigate={navigateAndClose} route={route} categories={categories} />
       </div>
     </header>
+
+    {/* Mobile bottom navigation bar — outside header so position:fixed works */}
+    <nav className="mobile-bottom-bar" aria-label="Mobile navigation">
+      <button className={`mobile-bottom-item${route.path === "/" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/")}>
+        <Icon name="grid" />
+        <span>Home</span>
+      </button>
+      <button className={`mobile-bottom-item${route.path === "/products" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/products")}>
+        <Icon name="box" />
+        <span>Products</span>
+      </button>
+      <button className={`mobile-bottom-item${route.path === "/cart" ? " is-active" : ""}`} type="button" onClick={() => navigateAndClose("/cart")}>
+        <Icon name="cart" />
+        {cartCount > 0 && <span className="mobile-bottom-badge">{cartCount}</span>}
+        <span>Cart</span>
+      </button>
+      <button className={`mobile-bottom-item${route.path === "/auth" ? " is-active" : ""}`} type="button" onClick={() => {
+        if (session) {
+          clearSession();
+          onSessionChange(null);
+          navigateAndClose("/");
+        } else {
+          navigateAndClose("/auth");
+        }
+      }}>
+        <Icon name="user" />
+        <span>{session ? "Logout" : "Account"}</span>
+      </button>
+    </nav>
+    </>
   );
 }
 

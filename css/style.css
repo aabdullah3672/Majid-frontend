@@ -164,8 +164,6 @@ button {
 }
 
 .search-form {
-  grid-column: 1 / -1;
-  order: 3;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -175,6 +173,10 @@ button {
   background: rgba(255, 255, 255, 0.04);
   padding: 0 5px 0 13px;
   overflow: hidden;
+}
+
+.navbar-search {
+  padding-bottom: 10px;
 }
 
 .search-form > .icon {
@@ -2283,12 +2285,7 @@ tr:last-child td {
   }
 
   .hero-actions .btn {
-    width: 100%;
-  }
-
-  .hero-arrow {
-    width: 36px;
-    height: 36px;
+    width: auto;
   }
 
   .hero-arrow-left {
@@ -2594,17 +2591,21 @@ tr:last-child td {
 /* Tablets (768px to 1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .navbar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    display: flex;
+    align-items: center;
     gap: 16px;
   }
 
   .search-form {
-    order: initial;
-    grid-column: initial;
     width: clamp(160px, 16vw, 220px);
     flex: 0 1 auto;
     max-width: none;
     margin-left: auto;
+    order: 3;
+  }
+
+  .header-actions {
+    order: 4;
   }
 
   .nav-links {
@@ -2707,17 +2708,21 @@ tr:last-child td {
 /* Desktop (1024px+) */
 @media (min-width: 1024px) {
   .navbar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    display: flex;
+    align-items: center;
     gap: 22px;
   }
 
   .search-form {
-    order: initial;
-    grid-column: initial;
     width: clamp(180px, 18vw, 300px);
     flex: 0 1 auto;
     max-width: none;
     margin-left: auto;
+    order: 3;
+  }
+
+  .header-actions {
+    order: 4;
   }
 
   .nav-links {
@@ -3305,6 +3310,61 @@ tr:last-child td {
    MOBILE OVERHAUL — fixes for layout, carousel, cards, header, images
    ═══════════════════════════════════════════════════════════════════════════════ */
 
+/* ─── Mobile Bottom Navigation Bar ──────────────────────────────────────── */
+.mobile-bottom-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+}
+
+.mobile-bottom-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 6px 4px;
+  position: relative;
+  transition: color 150ms ease;
+}
+
+.mobile-bottom-item .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.mobile-bottom-item.is-active {
+  color: var(--ronin-cta);
+}
+
+.mobile-bottom-badge {
+  position: absolute;
+  top: 2px;
+  right: calc(50% - 16px);
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #d43134;
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: 900;
+  padding: 0 4px;
+}
+
 /* Global: all placeholder/product images get rounded corners */
 .category-card img,
 .product-media img,
@@ -3316,50 +3376,62 @@ tr:last-child td {
 }
 
 @media (max-width: 767px) {
-  /* ─── Header: cleaner mobile navbar ─────────────────────────────── */
+  /* ─── Header: mobile navbar [☰] [Logo] [Search] ──────────────────── */
   .navbar {
-    grid-template-columns: auto 1fr auto;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
     gap: 8px;
     padding: 10px 0;
   }
 
-  /* Hide search form on mobile - use the mobile menu instead */
-  .search-form {
+  /* Hide desktop action buttons on mobile */
+  .navbar .header-actions {
     display: none !important;
   }
 
+  /* Search fills remaining space */
+  .navbar .search-form {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    order: unset !important;
+    grid-column: unset !important;
+  }
+
   .brand-name {
-    max-width: 80px;
-    font-size: 0.82rem;
+    display: none;
   }
 
-  .header-actions {
-    gap: 4px;
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    font-size: 0.75rem;
   }
 
-  .header-icon,
   .menu-toggle {
     width: 36px;
     height: 36px;
   }
 
-  .header-icon .icon,
   .menu-toggle .icon {
     width: 18px;
     height: 18px;
   }
 
-  .cart-badge {
-    min-width: 18px;
-    height: 18px;
-    font-size: 0.62rem;
-    top: -4px;
-    right: -4px;
+  /* ─── Mobile Bottom Navigation Bar ──────────────────────────────── */
+  .mobile-bottom-bar {
+    display: flex !important;
+  }
+
+  /* Add bottom padding to body so content isn't hidden behind bottom bar */
+  .page-shell,
+  main {
+    padding-bottom: 70px !important;
   }
 
   /* ─── Hero Carousel: fix overlapping text ───────────────────────── */
   .hero-slider {
-    min-height: 420px;
+    min-height: 380px;
   }
 
   .hero-overlay {
@@ -3371,18 +3443,42 @@ tr:last-child td {
   }
 
   .hero-content {
-    padding: 60px 0 70px;
+    padding: 24px 0 50px;
   }
 
   .hero-content h1 {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     line-height: 1.1;
+    padding: 0 44px;
   }
 
   .hero-content p:not(.eyebrow) {
-    font-size: 0.88rem;
-    margin-top: 12px;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    line-height: 1.4;
+    padding: 0 44px;
+  }
+
+  .hero-content .eyebrow {
+    padding: 0 44px;
+  }
+
+  .hero-actions {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 44px;
+  }
+
+  .hero-actions .btn {
+    min-height: 42px;
+    font-size: 0.85rem;
+  }
+
+  .hero-dots {
+    bottom: 8px;
   }
 
   .hero-actions {
@@ -3393,8 +3489,9 @@ tr:last-child td {
 
   .hero-actions .btn {
     width: 100%;
-    min-height: 48px;
-    font-size: 0.92rem;
+    min-height: 44px;
+    font-size: 0.88rem;
+    padding: 0 28px;
   }
 
   .hero-arrow {
@@ -3441,11 +3538,14 @@ tr:last-child td {
 
   .category-card {
     border-radius: 14px;
+    display: flex;
+    flex-direction: column;
   }
 
   .category-card img {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     border-radius: 14px 14px 0 0;
+    object-fit: cover;
   }
 
   .category-card div {
